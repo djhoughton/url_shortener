@@ -76,6 +76,10 @@ public class ServiceTests extends TestCase {
 		return new URL("http://foo.com/" + UUID.randomUUID() + "/" + UUID.randomUUID());
 	}
 
+	private URL getRandomAlias(URL base) throws MalformedURLException {
+		return new URL(base, "abc");
+	}
+
 	/*
 	 * Storing the same URL twice should give you the same alias.
 	 */
@@ -111,7 +115,7 @@ public class ServiceTests extends TestCase {
 	 */
 	public void test_errors() throws Exception {
 		// should be null if we haven't stored anything yet
-		assertNull(service.resolve(getRandomURL()));
+		assertNull(service.resolve(getRandomAlias(service.getBase())));
 
 		// invalid null parameter
 		try {

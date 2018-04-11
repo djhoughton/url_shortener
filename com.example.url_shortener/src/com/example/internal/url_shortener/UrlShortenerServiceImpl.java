@@ -28,8 +28,8 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
 	}
 
 	@Override
-	public URL store(URL longForm) throws UrlShortenerException {
-		return store(longForm, null);
+	public URL store(URL url) throws UrlShortenerException {
+		return store(url, null);
 	}
 
 	private URL buildUrl(URL base, String alias) throws UrlShortenerException {
@@ -40,10 +40,26 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
 		}
 	}
 
+	private URL buildUrl(URL base, long index) throws UrlShortenerException {
+		String alias = convertor.indexToAlias(index);
+		return buildUrl(base, alias);
+	}
+
+	private long getIndex(URL url) throws UrlShortenerException {
+		String base = DEFAULT_BASE.toExternalForm();
+		String u = url.toExternalForm();
+		if (u.startsWith(base)) {
+			String alias = u.substring(base.length());
+			return convertor.aliasToIndex(alias);
+		} else {
+			throw new UrlShortenerException("Invalid short form URL: " + url.toExternalForm());
+		}
+	}
+
 	@Override
-	public URL store(URL longForm, String alias) throws UrlShortenerException {
+	public URL store(URL url, String alias) throws UrlShortenerException {
 		// parameter validation
-		if (longForm == null) {
+		if (url == null) {
 			throw new UrlShortenerException(new IllegalArgumentException("Invalid parameters."));
 		}
 
@@ -51,53 +67,48 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
 		// return the short form
 		if (alias == null) {
 			// does it already exist?
-			URL[] existing = storage.getAliases(longForm);
+			long[] existing = storage.getIndexes(url);
 			if (existing.length > 0) {
 				// might have multiple matches but just return the first one
-				return existing[0];
+				return buildUrl(DEFAULT_BASE, existing[0]);
 			}
 			// otherwise store the URL
 			long index = storage.nextAvailableIndex();
-			String post = convertor.indexToAlias(index);
-			URL shortForm = buildUrl(DEFAULT_BASE, post);
-			storage.store(longForm, shortForm, index);
-			return shortForm;
+			storage.store(url, index);
+			return buildUrl(DEFAULT_BASE, index);
 		}
 
 		// otherwise see if the requested short form is available.
 		// first we check to see if the user gave us something valid
 		assertValidAlias(alias);
-		URL shortForm = buildUrl(DEFAULT_BASE, alias);
-		URL existing = storage.resolve(shortForm);
+		long index = convertor.aliasToIndex(alias);
+		URL existing = storage.resolve(index);
 		if (existing != null) {
 			// it already exist so just return
-			if (longForm.equals(existing)) {
-				return shortForm;
+			URL result = buildUrl(DEFAULT_BASE, alias);
+			if (url.equals(existing)) {
+				return result;
 			}
 			// it exists but references a different URL
-			throw new AliasAlreadyExistsException("Alias already exists: " + shortForm.toExternalForm());
+			throw new AliasAlreadyExistsException("Alias already exists: " + result.toExternalForm());
 		}
 
-		long index = storage.nextAvailableIndex();
-		storage.store(longForm, shortForm, index);
-		return shortForm;
+		index = storage.store(url, storage.nextAvailableIndex());
+		return buildUrl(DEFAULT_BASE, index);
 	}
 
 	@Override
-	public URL resolve(URL shortForm) throws UrlShortenerException {
+	public URL resolve(URL url) throws UrlShortenerException {
 		// parameter validation
-		if (shortForm == null) {
+		if (url == null) {
 			throw new UrlShortenerException(new IllegalArgumentException("Null parameter"));
 		}
 
-		// // strip the alias from the incoming URL
-		// String alias = getAlias(shortForm);
-		//
-		// // convert the alias to an index
-		// long index = convertor.aliasToIndex(alias);
+		// strip the alias from the incoming URL
+		long index = getIndex(url);
 
 		// perform a lookup in the storage and return what is stored at the index
-		return storage.resolve(shortForm);
+		return storage.resolve(index);
 	}
 
 	@Override

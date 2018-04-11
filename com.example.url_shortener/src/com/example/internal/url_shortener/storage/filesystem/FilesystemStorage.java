@@ -20,27 +20,27 @@ public class FilesystemStorage implements Storage {
 	}
 
 	@Override
-	public URL[] getAliases(URL longForm) throws UrlShortenerException {
+	public long[] getIndexes(URL url) throws UrlShortenerException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public URL resolve(URL shortForm) throws UrlShortenerException {
+	public URL resolve(long index) throws UrlShortenerException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public void store(URL longForm, URL shortForm, long index) throws UrlShortenerException {
+	public long store(URL url, long index) throws UrlShortenerException {
 		// TODO Auto-generated method stub
-
+		return -1;
 	}
 
 	@Override
-	public void store(URL longForm, URL shortForm) throws UrlShortenerException {
+	public long store(URL url) throws UrlShortenerException {
 		// TODO Auto-generated method stub
-
+		return -1;
 	}
 
 	@Override

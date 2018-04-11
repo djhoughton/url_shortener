@@ -4,9 +4,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.example.internal.url_shortener.storage.StoredData;
 import com.example.url_shortener.AliasAlreadyExistsException;
-import com.example.url_shortener.UrlShortenerException;
 
 /**
  * This class represents the equivalent of a table in a relational database.
@@ -16,26 +14,25 @@ import com.example.url_shortener.UrlShortenerException;
 public class Table {
 
 	private List<Long> indexes = new ArrayList<Long>();
-	private List<URL> shortForms = new ArrayList<URL>();
-	private List<URL> longForms = new ArrayList<URL>();
+	private List<URL> urls = new ArrayList<URL>();
 
 	/**
 	 * Return the data associated with this index or <code>null</code> if one does
 	 * not exist.
 	 * 
-	 * SQL equivalent: SELECT * FROM TABLE WHERE INDEX=index;
+	 * SQL equivalent: SELECT URL FROM TABLE WHERE INDEX=index;
 	 * 
 	 * @param index
 	 *            the index
 	 * @return the associated URL or <code>null</code>
 	 */
-	private StoredData getDataAtIndex(long index) {
+	public URL getUrl(long index) {
 		int i = indexes.indexOf(index);
 		// not found
 		if (i == -1) {
 			return null;
 		}
-		return new StoredData(index, shortForms.get(i), longForms.get(i));
+		return urls.get(i);
 	}
 
 	/**
@@ -55,42 +52,25 @@ public class Table {
 	 * Return the list data objects in the table associated with the given long form
 	 * URL or an empty list if it does not exist.
 	 * 
-	 * SQL equivalent: SELECT * FROM TABLE WHERE LONG_FORM='url';
+	 * SQL equivalent: SELECT INDEX FROM TABLE WHERE URL='url';
 	 * 
 	 * @param url
 	 *            the url
-	 * @return the list of data
+	 * @return the list of indexes
 	 */
-	public StoredData[] getFromLongForm(URL url) {
-		List<StoredData> result = new ArrayList<StoredData>();
-		for (int i = 0; i < longForms.size(); i++) {
-			URL longForm = longForms.get(i);
+	public long[] getIndexes(URL url) {
+		List<Long> result = new ArrayList<Long>();
+		for (int i = 0; i < urls.size(); i++) {
+			URL longForm = urls.get(i);
 			if (longForm.equals(url)) {
-				result.add(new StoredData(indexes.get(i), shortForms.get(i), longForms.get(i)));
+				result.add(indexes.get(i));
 			}
 		}
-		return result.toArray(new StoredData[result.size()]);
-	}
-
-	/**
-	 * Return the data in the table associated with the given short form URL or
-	 * <code>null</code> if it does not exist.
-	 * 
-	 * SQL equivalent: SELECT * FROM TABLE WHERE SHORT_FORM='url';
-	 * 
-	 * @param url
-	 *            the short for URL to search for
-	 * @return the associated long for URL
-	 * @throws UrlShortenerException
-	 *             if an error occurred
-	 */
-	public StoredData getFromShortForm(URL url) {
-		int i = shortForms.indexOf(url);
-		// not found
-		if (i == -1) {
-			return null;
+		long[] l = new long[result.size()];
+		for (int i = 0; i < l.length; i++) {
+			l[i] = result.get(i).longValue();
 		}
-		return new StoredData(indexes.get(i), shortForms.get(i), longForms.get(i));
+		return l;
 	}
 
 	/**
@@ -98,26 +78,26 @@ public class Table {
 	 * 
 	 * If there is already a URL stored at this index, an exception will be thrown.
 	 * 
-	 * @param longForm
-	 *            the long form url
-	 * @param shortForm
-	 *            the short form URL
+	 * @param url
+	 *            the url to store
 	 * @param index
 	 *            the index to use
+	 * @param index
+	 *            the index where the URL is stored
 	 * @throws AliasAlreadyExistsException
 	 *             if a URL is already stored at this index
 	 */
-	public void put(URL longForm, URL shortForm, long index) throws AliasAlreadyExistsException {
-		StoredData existing = getDataAtIndex(index);
+	public long put(URL url, long index) throws AliasAlreadyExistsException {
+		URL existing = getUrl(index);
 		if (existing != null) {
-			if (existing.longForm.equals(longForm) && existing.shortForm.equals(shortForm)) {
-				return;
+			if (existing.equals(url)) {
+				return index;
 			}
 			// another URL is stored at this index
 			throw new AliasAlreadyExistsException("Alias already exists: " + index);
 		}
 		indexes.add(index);
-		longForms.add(longForm);
-		shortForms.add(shortForm);
+		urls.add(url);
+		return index;
 	}
 }

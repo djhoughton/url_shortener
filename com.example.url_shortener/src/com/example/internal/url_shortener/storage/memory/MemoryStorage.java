@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.example.internal.url_shortener.Storage;
-import com.example.internal.url_shortener.storage.StoredData;
 import com.example.url_shortener.UrlShortenerException;
 
 /**
@@ -49,46 +48,47 @@ public class MemoryStorage implements Storage {
 	}
 
 	@Override
-	public void store(URL longForm, URL shortForm, long index) throws UrlShortenerException {
-		internalStore(longForm, shortForm, index);
+	public long store(URL url, long index) throws UrlShortenerException {
+		return internalStore(url, index);
 	}
 
-	private void internalStore(URL longForm, URL shortForm, long index) throws UrlShortenerException {
+	private long internalStore(URL url, long index) throws UrlShortenerException {
 		Table table = getTableForIndex(index);
 		// will throw an exception if it already exists under another URL
-		table.put(longForm, shortForm, index);
+		return table.put(url, index);
 	}
 
 	@Override
-	public URL resolve(URL shortForm) throws UrlShortenerException {
+	public URL resolve(long index) throws UrlShortenerException {
 		// TODO need a better way to than searching across all tables
 		for (Table t : tables) {
-			StoredData data = t.getFromShortForm(shortForm);
-			if (data != null) {
-				return data.longForm;
+			URL url = t.getUrl(index);
+			if (url != null) {
+				return url;
 			}
 		}
 		return null;
 	}
 
 	@Override
-	public URL[] getAliases(URL longForm) throws UrlShortenerException {
+	public long[] getIndexes(URL url) throws UrlShortenerException {
 		// TODO need a better way to than searching across all tables
-		List<URL> result = new ArrayList<URL>();
+		List<Long> result = new ArrayList<Long>();
 		for (Table t : tables) {
-			for (StoredData data : t.getFromLongForm(longForm)) {
-				result.add(data.shortForm);
+			for (long data : t.getIndexes(url)) {
+				result.add(data);
 			}
 		}
-		return result.toArray(new URL[result.size()]);
+		return result.stream().mapToLong(l -> l).toArray();
 	}
 
 	@Override
-	public void store(URL longForm, URL shortForm) throws UrlShortenerException {
+	public long store(URL url) throws UrlShortenerException {
 		long index = nextAvailableIndex();
-		internalStore(longForm, shortForm, index);
+		internalStore(url, index);
 		// record the index so we don't have to start from the beginning next time we
 		// search for an unused one
 		lastCreate = index;
+		return index;
 	}
 }

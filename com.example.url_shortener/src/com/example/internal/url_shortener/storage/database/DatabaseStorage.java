@@ -11,8 +11,7 @@ import com.example.url_shortener.UrlShortenerException;
 public class DatabaseStorage implements Storage {
 
 	private static final String TABLE_NAME = "URL_SHORTENER";
-	private static final String COLUMN_LONGFORM = "LONG_FORM";
-	private static final String COLUMN_SHORTFORM = "SHORT_FORM";
+	private static final String COLUMN_URL = "URL";
 	private static final String COLUMN_INDEX = "INDEX";
 
 	public DatabaseStorage() {
@@ -23,42 +22,39 @@ public class DatabaseStorage implements Storage {
 		// TODO create DB connection
 
 		// TODO if table exists then return
-		String sql = "CREATE TABLE " + TABLE_NAME + " (" + COLUMN_INDEX + " LONG, " + COLUMN_LONGFORM
-				+ " VARCHAR(255), " + COLUMN_SHORTFORM + " VARCHAR(255))";
+		String sql = "CREATE TABLE " + TABLE_NAME + " (" + COLUMN_INDEX + " LONG, " + COLUMN_URL + " VARCHAR(255))";
 	}
 
 	@Override
-	public URL[] getAliases(URL longForm) throws UrlShortenerException {
-		String sql = "SELECT " + COLUMN_SHORTFORM + " FROM " + TABLE_NAME + " WHERE " + COLUMN_LONGFORM + "='"
-				+ longForm + "'";
+	public long[] getIndexes(URL url) throws UrlShortenerException {
+		String sql = "SELECT " + COLUMN_INDEX + " FROM " + TABLE_NAME + " WHERE " + COLUMN_URL + "='" + url + "'";
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public URL resolve(URL shortForm) throws UrlShortenerException {
-		String sql = "SELECT " + COLUMN_LONGFORM + " FROM " + TABLE_NAME + " WHERE " + COLUMN_SHORTFORM + "='"
-				+ shortForm + "'";
+	public URL resolve(long index) throws UrlShortenerException {
+		String sql = "SELECT " + COLUMN_URL + " FROM " + TABLE_NAME + " WHERE " + COLUMN_INDEX + "=" + index;
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public void store(URL longForm, URL shortForm, long index) throws UrlShortenerException {
-		// TODO Auto-generated method stub
-
+	public long store(URL url, long index) throws UrlShortenerException {
+		return internalStore(url, index);
 	}
 
-	private void internalStore(URL longForm, URL shortForm, long index) throws UrlShortenerException {
-		String sql = "INSERT INTO " + TABLE_NAME + " (" + COLUMN_INDEX + ", " + COLUMN_LONGFORM + ", "
-				+ COLUMN_SHORTFORM + ") VALUES (" + index + ", " + longForm.toExternalForm() + ", "
-				+ shortForm.toExternalForm() + ")";
+	private long internalStore(URL url, long index) throws UrlShortenerException {
+		String sql = "INSERT INTO " + TABLE_NAME + " (" + COLUMN_INDEX + ", " + COLUMN_URL + ") VALUES (" + index + ", "
+				+ url.toExternalForm() + ")";
+		// TODO
+		return -1;
 	}
 
 	@Override
-	public void store(URL longForm, URL shortForm) throws UrlShortenerException {
+	public long store(URL url) throws UrlShortenerException {
 		long index = nextAvailableIndex();
-		internalStore(longForm, shortForm, index);
+		return internalStore(url, index);
 	}
 
 	@Override
