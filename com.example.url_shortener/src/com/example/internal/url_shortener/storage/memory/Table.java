@@ -66,11 +66,7 @@ public class Table {
 				result.add(indexes.get(i));
 			}
 		}
-		long[] l = new long[result.size()];
-		for (int i = 0; i < l.length; i++) {
-			l[i] = result.get(i).longValue();
-		}
-		return l;
+		return result.stream().mapToLong(l -> l).toArray();
 	}
 
 	/**
