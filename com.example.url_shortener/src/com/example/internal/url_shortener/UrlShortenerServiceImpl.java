@@ -81,7 +81,7 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
 		// first we check to see if the user gave us something valid
 		assertValidAlias(alias);
 		long index = convertor.aliasToIndex(alias);
-		URL existing = storage.resolve(index);
+		URL existing = storage.getUrl(index);
 		if (existing != null) {
 			// it already exist so just return
 			URL result = buildUrl(DEFAULT_BASE, alias);
@@ -107,7 +107,7 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
 		long index = getIndex(url);
 
 		// perform a lookup in the storage and return what is stored at the index
-		return storage.resolve(index);
+		return storage.getUrl(index);
 	}
 
 	@Override

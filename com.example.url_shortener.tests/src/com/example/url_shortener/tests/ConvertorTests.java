@@ -12,7 +12,7 @@ public class ConvertorTests extends TestCase {
 	 */
 	public void test_basic() throws Exception {
 		long maxNum = 10000;
-		for (int base = 2; base <= Convertor.getMaxBase(); base++) {
+		for (int base = 2; base <= Convertor.MAX_BASE; base++) {
 			Convertor convertor = new Convertor(base);
 			for (long num = 0; num < maxNum; num++) {
 				String shortForm = convertor.indexToAlias(num);
@@ -38,7 +38,7 @@ public class ConvertorTests extends TestCase {
 		Convertor convertor;
 		// try to have a base which is too large
 		try {
-			convertor = new Convertor(Convertor.getMaxBase() + 1);
+			convertor = new Convertor(Convertor.MAX_BASE + 1);
 			fail("Should fail because base is too large.");
 		} catch (UrlShortenerException e) {
 			// expected

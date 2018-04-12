@@ -17,8 +17,9 @@ public interface Storage {
 	public static final long MAX_SIZE = 100000;
 
 	/**
-	 * Return the index associated with the given url. If the url is not found then
-	 * return -1.
+	 * Return the index associated with the given url.
+	 * 
+	 * If the url is not found in the storage then return -1.
 	 * 
 	 * @param url
 	 *            the url to check
@@ -29,8 +30,9 @@ public interface Storage {
 	public long getIndex(URL url) throws UrlShortenerException;
 
 	/**
-	 * Return the URL associated with the given index. Return <code>null</code> if
-	 * one does not exist.
+	 * Return the URL associated with the given index.
+	 * 
+	 * Return <code>null</code> if the index is not found in the storage.
 	 * 
 	 * @param index
 	 *            the index to lookup
@@ -38,13 +40,15 @@ public interface Storage {
 	 * @throws UrlShortenerException
 	 *             if an error occurred
 	 */
-	public URL resolve(long index) throws UrlShortenerException;
+	public URL getUrl(long index) throws UrlShortenerException;
 
 	/**
 	 * Store the given URL at the specified index.
 	 * 
 	 * The index must be unique across the storage. If a different URL is already
 	 * associated with this index, an exception will be thrown.
+	 * 
+	 * Return the index.
 	 * 
 	 * @param url
 	 *            the URL to store
@@ -57,6 +61,8 @@ public interface Storage {
 
 	/**
 	 * Store the given URL in the database.
+	 * 
+	 * Return the index that will be associated with the URL.
 	 * 
 	 * @param url
 	 *            the URL to store

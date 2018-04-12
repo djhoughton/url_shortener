@@ -10,13 +10,19 @@ import com.example.url_shortener.UrlShortenerException;
  */
 public class Convertor {
 
+	/*
+	 * Hard-coded to be the size of the mappings table.
+	 */
+	public static final int MAX_BASE = 62;
+
 	private int base;
-	private static List<Character> mappings = new ArrayList<Character>();
+	private List<Character> mappings;
 
 	/*
 	 * Initialize our mapping table.
 	 */
-	static {
+	private void initialize() {
+		mappings = new ArrayList<Character>();
 		for (char c = '0'; c <= '9'; c++) {
 			mappings.add(c);
 		}
@@ -26,20 +32,27 @@ public class Convertor {
 		for (char c = 'A'; c <= 'Z'; c++) {
 			mappings.add(c);
 		}
+		// double-check the max size
+		if (mappings.size() != MAX_BASE) {
+			throw new IllegalStateException();
+		}
 	}
 
 	/*
-	 * Return the maximum allowed size for a base.
+	 * Lazy-initialize mappings list.
 	 */
-	public static int getMaxBase() {
-		return mappings.size();
+	private List<Character> getMappings() {
+		if (mappings == null) {
+			initialize();
+		}
+		return mappings;
 	}
 
 	/*
 	 * Create and return a new convertor of the max size.
 	 */
 	public Convertor() throws UrlShortenerException {
-		this(getMaxBase());
+		this.base = MAX_BASE;
 	}
 
 	/*
@@ -49,8 +62,8 @@ public class Convertor {
 		if (base < 1) {
 			throw new UrlShortenerException("Base must be larger than 1. (" + base + ")");
 		}
-		if (base > mappings.size()) {
-			throw new UrlShortenerException("Base cannot be larger than " + mappings.size());
+		if (base > MAX_BASE) {
+			throw new UrlShortenerException("Base cannot be larger than " + MAX_BASE);
 		}
 		this.base = base;
 	}
@@ -123,7 +136,7 @@ public class Convertor {
 	 * is invalid.
 	 */
 	private int getInt(Character character) throws UrlShortenerException {
-		int result = mappings.indexOf(character);
+		int result = getMappings().indexOf(character);
 		if (result == -1) {
 			throw new UrlShortenerException("Unknown character in alias: " + character);
 		}
@@ -136,7 +149,7 @@ public class Convertor {
 	 */
 	private Character getChar(int i) throws UrlShortenerException {
 		try {
-			return mappings.get(i);
+			return getMappings().get(i);
 		} catch (IndexOutOfBoundsException e) {
 			throw new UrlShortenerException(e);
 		}

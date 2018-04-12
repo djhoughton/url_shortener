@@ -33,7 +33,7 @@ public class DatabaseStorage implements Storage {
 	}
 
 	@Override
-	public URL resolve(long index) throws UrlShortenerException {
+	public URL getUrl(long index) throws UrlShortenerException {
 		String sql = "SELECT " + COLUMN_URL + " FROM " + TABLE_NAME + " WHERE " + COLUMN_INDEX + "=" + index;
 		// TODO Auto-generated method stub
 		return null;

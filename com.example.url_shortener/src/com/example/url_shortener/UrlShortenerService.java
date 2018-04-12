@@ -31,8 +31,8 @@ public interface UrlShortenerService {
 	/**
 	 * Store the given URL and associate it with the given alias.
 	 * 
-	 * If the given alias is <code>null</code> then associate a random alias with
-	 * this URL.
+	 * If the given alias is <code>null</code> then generate an alias to associate
+	 * with this URL.
 	 * 
 	 * @param url
 	 *            the URL to store

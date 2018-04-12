@@ -26,7 +26,7 @@ public class FilesystemStorage implements Storage {
 	}
 
 	@Override
-	public URL resolve(long index) throws UrlShortenerException {
+	public URL getUrl(long index) throws UrlShortenerException {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -1,8 +1,8 @@
 package com.example.internal.url_shortener.storage.memory;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.example.url_shortener.AliasAlreadyExistsException;
 
@@ -13,8 +13,7 @@ import com.example.url_shortener.AliasAlreadyExistsException;
  */
 public class Table {
 
-	private List<Long> indexes = new ArrayList<Long>();
-	private List<URL> urls = new ArrayList<URL>();
+	private Map<Long, URL> data = new HashMap<Long, URL>();
 
 	/**
 	 * Return the data associated with this index or <code>null</code> if one does
@@ -27,12 +26,7 @@ public class Table {
 	 * @return the associated URL or <code>null</code>
 	 */
 	public URL getUrl(long index) {
-		int i = indexes.indexOf(index);
-		// not found
-		if (i == -1) {
-			return null;
-		}
-		return urls.get(i);
+		return data.get(index);
 	}
 
 	/**
@@ -45,7 +39,7 @@ public class Table {
 	 *         <code>false</code> otherwise
 	 */
 	public boolean containsIndex(long index) {
-		return indexes.contains(index);
+		return data.get(index) != null;
 	}
 
 	/**
@@ -59,10 +53,9 @@ public class Table {
 	 * @return the index for the url or -1
 	 */
 	public long getIndex(URL url) {
-		for (int i = 0; i < urls.size(); i++) {
-			URL longForm = urls.get(i);
-			if (longForm.equals(url)) {
-				return indexes.get(i);
+		for (Map.Entry<Long, URL> entry : data.entrySet()) {
+			if (entry.getValue().equals(url)) {
+				return entry.getKey().longValue();
 			}
 		}
 		return -1;
@@ -91,8 +84,7 @@ public class Table {
 			// another URL is stored at this index
 			throw new AliasAlreadyExistsException("Alias already exists: " + index);
 		}
-		indexes.add(index);
-		urls.add(url);
+		data.put(index, url);
 		return index;
 	}
 }

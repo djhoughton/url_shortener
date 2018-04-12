@@ -59,7 +59,7 @@ public class MemoryStorage implements Storage {
 	}
 
 	@Override
-	public URL resolve(long index) throws UrlShortenerException {
+	public URL getUrl(long index) throws UrlShortenerException {
 		// TODO need a better way to than searching across all tables
 		for (Table t : tables) {
 			URL url = t.getUrl(index);
