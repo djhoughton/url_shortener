@@ -32,6 +32,9 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
 		return store(url, null);
 	}
 
+	/*
+	 * Build a new URL from the given base and alias.
+	 */
 	private URL buildUrl(URL base, String alias) throws UrlShortenerException {
 		try {
 			return new URL(base, alias);
@@ -40,11 +43,19 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
 		}
 	}
 
+	/*
+	 * Build a new URL from the given base and index. Convert the index to an alias
+	 * first.
+	 */
 	private URL buildUrl(URL base, long index) throws UrlShortenerException {
 		String alias = convertor.indexToAlias(index);
 		return buildUrl(base, alias);
 	}
 
+	/*
+	 * Get the index from the given short form URL. Strip off the common short form
+	 * base, get the alias, and convert it to an index.
+	 */
 	private long getIndex(URL url) throws UrlShortenerException {
 		String base = DEFAULT_BASE.toExternalForm();
 		String u = url.toExternalForm();
@@ -69,7 +80,7 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
 			// does it already exist?
 			long existing = storage.getIndex(url);
 			if (existing != -1) {
-				// might have multiple matches but just return the first one
+				// build a url from the existing index
 				return buildUrl(DEFAULT_BASE, existing);
 			}
 			// otherwise store the URL
@@ -77,7 +88,8 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
 			return buildUrl(DEFAULT_BASE, index);
 		}
 
-		// otherwise see if the requested short form is available.
+		// otherwise see if the requested short form is available
+
 		// first we check to see if the user gave us something valid
 		assertValidAlias(alias);
 		long index = convertor.aliasToIndex(alias);
