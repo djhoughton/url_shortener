@@ -71,15 +71,15 @@ public class MemoryStorage implements Storage {
 	}
 
 	@Override
-	public long[] getIndexes(URL url) throws UrlShortenerException {
+	public long getIndex(URL url) throws UrlShortenerException {
 		// TODO need a better way to than searching across all tables
-		List<Long> result = new ArrayList<Long>();
 		for (Table t : tables) {
-			for (long data : t.getIndexes(url)) {
-				result.add(data);
+			long index = t.getIndex(url);
+			if (index != -1) {
+				return index;
 			}
 		}
-		return result.stream().mapToLong(l -> l).toArray();
+		return -1;
 	}
 
 	@Override

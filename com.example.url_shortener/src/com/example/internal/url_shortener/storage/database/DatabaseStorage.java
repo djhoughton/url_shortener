@@ -26,10 +26,10 @@ public class DatabaseStorage implements Storage {
 	}
 
 	@Override
-	public long[] getIndexes(URL url) throws UrlShortenerException {
+	public long getIndex(URL url) throws UrlShortenerException {
 		String sql = "SELECT " + COLUMN_INDEX + " FROM " + TABLE_NAME + " WHERE " + COLUMN_URL + "='" + url + "'";
 		// TODO Auto-generated method stub
-		return null;
+		return -1;
 	}
 
 	@Override
@@ -57,10 +57,8 @@ public class DatabaseStorage implements Storage {
 		return internalStore(url, index);
 	}
 
-	@Override
-	public long nextAvailableIndex() throws UrlShortenerException {
-		// TODO Auto-generated method stub
-		return 0;
+	private long nextAvailableIndex() {
+		// TODO
+		return -1;
 	}
-
 }

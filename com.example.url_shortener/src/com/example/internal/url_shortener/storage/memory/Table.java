@@ -49,24 +49,23 @@ public class Table {
 	}
 
 	/**
-	 * Return the list data objects in the table associated with the given long form
-	 * URL or an empty list if it does not exist.
+	 * Return the index of the url in the table. Return -1 if the url does not
+	 * exist.
 	 * 
 	 * SQL equivalent: SELECT INDEX FROM TABLE WHERE URL='url';
 	 * 
 	 * @param url
 	 *            the url
-	 * @return the list of indexes
+	 * @return the index for the url or -1
 	 */
-	public long[] getIndexes(URL url) {
-		List<Long> result = new ArrayList<Long>();
+	public long getIndex(URL url) {
 		for (int i = 0; i < urls.size(); i++) {
 			URL longForm = urls.get(i);
 			if (longForm.equals(url)) {
-				result.add(indexes.get(i));
+				return indexes.get(i);
 			}
 		}
-		return result.stream().mapToLong(l -> l).toArray();
+		return -1;
 	}
 
 	/**

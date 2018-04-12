@@ -20,9 +20,9 @@ public class FilesystemStorage implements Storage {
 	}
 
 	@Override
-	public long[] getIndexes(URL url) throws UrlShortenerException {
+	public long getIndex(URL url) throws UrlShortenerException {
 		// TODO Auto-generated method stub
-		return null;
+		return -1;
 	}
 
 	@Override
@@ -42,11 +42,4 @@ public class FilesystemStorage implements Storage {
 		// TODO Auto-generated method stub
 		return -1;
 	}
-
-	@Override
-	public long nextAvailableIndex() throws UrlShortenerException {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
 }

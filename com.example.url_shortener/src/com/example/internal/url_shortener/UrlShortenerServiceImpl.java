@@ -67,14 +67,13 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
 		// return the short form
 		if (alias == null) {
 			// does it already exist?
-			long[] existing = storage.getIndexes(url);
-			if (existing.length > 0) {
+			long existing = storage.getIndex(url);
+			if (existing != -1) {
 				// might have multiple matches but just return the first one
-				return buildUrl(DEFAULT_BASE, existing[0]);
+				return buildUrl(DEFAULT_BASE, existing);
 			}
 			// otherwise store the URL
-			long index = storage.nextAvailableIndex();
-			storage.store(url, index);
+			long index = storage.store(url);
 			return buildUrl(DEFAULT_BASE, index);
 		}
 
@@ -93,7 +92,7 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
 			throw new AliasAlreadyExistsException("Alias already exists: " + result.toExternalForm());
 		}
 
-		index = storage.store(url, storage.nextAvailableIndex());
+		index = storage.store(url);
 		return buildUrl(DEFAULT_BASE, index);
 	}
 
