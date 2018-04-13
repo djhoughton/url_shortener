@@ -1,0 +1,10 @@
+<project default="build-war">
+	<target name="build-war">
+		<war destfile="./url_shortener.war" webxml="WEB-INF/web.xml">
+			<fileset dir="WEB-INF">
+				<include name="**/*.*" />
+			</fileset>
+			<classes dir="bin" />
+		</war>
+	</target>
+</project>

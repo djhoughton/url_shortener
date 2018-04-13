@@ -1,0 +1,1 @@
+docker run -it -p 8080:8080 -v $(pwd)/url_shortener.war:/usr/local/tomcat/webapps/url_shortener.war tomcat
