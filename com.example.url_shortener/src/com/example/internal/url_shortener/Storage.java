@@ -14,7 +14,7 @@ public interface Storage {
 	/**
 	 * Total number of allowed entries in the storage.
 	 */
-	public static final long MAX_SIZE = 100000;
+	public static final long MAX_SIZE = 8000000;
 
 	/**
 	 * Return the index associated with the given url.

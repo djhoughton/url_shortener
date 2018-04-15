@@ -9,6 +9,7 @@ import java.util.UUID;
 
 import com.example.internal.url_shortener.Storage;
 import com.example.internal.url_shortener.UrlShortenerServiceImpl;
+import com.example.internal.url_shortener.UrlShortenerServiceImpl.KeyValuePair;
 import com.example.url_shortener.AliasAlreadyExistsException;
 import com.example.url_shortener.UrlShortenerException;
 import com.example.url_shortener.UrlShortenerService;
@@ -75,11 +76,26 @@ public class ServiceTests extends TestCase {
 	}
 
 	public void test_iterator() throws Exception {
-		service.store(getRandomURL());
-		service.store(getRandomURL(), "abc");
-		for (Iterator iter = ((UrlShortenerServiceImpl) service).getEntries(); iter.hasNext(); ) {
-			System.out.println(iter.next().toString());
+		List<URL> urls = new ArrayList<URL>();
+
+		URL url = getRandomURL();
+		urls.add(url);
+		service.store(url);
+
+		url = getRandomURL();
+		urls.add(url);
+		service.store(url, "abc");
+
+		url = new URL("http://tsn.ca");
+		urls.add(url);
+		service.store(url, "tsn");
+
+		int count = 0;
+		for (Iterator<KeyValuePair> iter = ((UrlShortenerServiceImpl) service).getEntries(); iter.hasNext();) {
+			assertTrue(urls.contains(iter.next().url));
+			count++;
 		}
+		assertEquals(urls.size(), count);
 	}
 
 	/*

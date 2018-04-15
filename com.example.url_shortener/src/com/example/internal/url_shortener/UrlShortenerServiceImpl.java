@@ -142,6 +142,9 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
 				throw new UrlShortenerException(new IllegalArgumentException());
 			}
 		}
+		if (convertor.aliasToIndex(alias) > Storage.MAX_SIZE) {
+			throw new UrlShortenerException("Invalid alias. (maps to number too large)");
+		}
 	}
 
 	@Override
@@ -149,9 +152,12 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
 		return convertor.getValidCharacters();
 	}
 
-	class KeyValuePair {
-		long index;
-		URL url;
+	/*
+	 * Class made public for test suites.
+	 */
+	public class KeyValuePair {
+		public long index;
+		public URL url;
 
 		KeyValuePair(long index, URL url) {
 			this.index = index;
