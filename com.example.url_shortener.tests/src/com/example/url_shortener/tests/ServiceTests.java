@@ -3,6 +3,7 @@ package com.example.url_shortener.tests;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
@@ -44,6 +45,10 @@ public class ServiceTests extends TestCase {
 			data.add(getRandomURL());
 		}
 
+		URL u = getRandomURL();
+		URL shortForm = service.store(u, "abc");
+		assertEquals(u, service.resolve(shortForm));
+
 		for (URL url : data) {
 			// store them and then look them up by their alias
 			URL alias = service.store(url);
@@ -66,6 +71,14 @@ public class ServiceTests extends TestCase {
 			} catch (AliasAlreadyExistsException e) {
 				// expected
 			}
+		}
+	}
+
+	public void test_iterator() throws Exception {
+		service.store(getRandomURL());
+		service.store(getRandomURL(), "abc");
+		for (Iterator iter = ((UrlShortenerServiceImpl) service).getEntries(); iter.hasNext(); ) {
+			System.out.println(iter.next().toString());
 		}
 	}
 

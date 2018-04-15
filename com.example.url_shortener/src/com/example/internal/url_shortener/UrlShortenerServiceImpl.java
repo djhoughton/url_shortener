@@ -2,6 +2,8 @@ package com.example.internal.url_shortener;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 import com.example.internal.url_shortener.storage.memory.MemoryStorage;
 import com.example.url_shortener.AliasAlreadyExistsException;
@@ -104,7 +106,7 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
 			throw new AliasAlreadyExistsException("Alias already exists: " + result.toExternalForm());
 		}
 
-		index = storage.store(url);
+		index = storage.store(url, index);
 		return buildUrl(DEFAULT_BASE, index);
 	}
 
@@ -145,5 +147,76 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
 	@Override
 	public String getValidAliasCharacters() {
 		return convertor.getValidCharacters();
+	}
+
+	class KeyValuePair {
+		long index;
+		URL url;
+
+		KeyValuePair(long index, URL url) {
+			this.index = index;
+			this.url = url;
+		}
+
+		@Override
+		public String toString() {
+			return index + "->" + url;
+		}
+	}
+
+	public Iterator<KeyValuePair> getEntries() {
+		return new Iterator<KeyValuePair>() {
+			long nextIndex = 0;
+			boolean done = false;
+			KeyValuePair next = null;
+
+			private void fetchNext() throws UrlShortenerException {
+				// no more results
+				if (done || next != null) {
+					return;
+				}
+
+				// get the next entry
+				for (long index = nextIndex; index < Storage.MAX_SIZE; index++) {
+					URL url = storage.getUrl(index);
+					if (url != null) {
+						nextIndex = index + 1;
+						next = new KeyValuePair(index, url);
+						return;
+					}
+				}
+
+				// no more results
+				done = true;
+				return;
+			}
+
+			@Override
+			public boolean hasNext() {
+				try {
+					fetchNext();
+				} catch (UrlShortenerException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				return next != null;
+			}
+
+			@Override
+			public KeyValuePair next() {
+				try {
+					fetchNext();
+				} catch (UrlShortenerException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				if (next == null) {
+					throw new NoSuchElementException();
+				}
+				KeyValuePair result = next;
+				next = null;
+				return result;
+			}
+		};
 	}
 }
